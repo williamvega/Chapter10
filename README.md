@@ -108,9 +108,67 @@ We can see the files in action in the subdirectory included, called PhoneNumber.
 
 ## Chapter 10.6 Overloading Unary Operators
 
+Considerations when overloading a unary operator:
+1. The overload must be non-static, so it may access non-static data members.
+1. The overload will have no arguments, it it is a member function, or one argument, if it is a non-member function.
 
+Two examples showcasing this:
 
+**Unary Overloaded Operators as Member Functions**
 
+```cpp
+class Person {
+public:
+	bool operator!() const;
+};
+```
 
+**Unary Overloaded Operators as Non-Member Functions**
 
+```cpp
+bool operator!(const String&); 
+```
 
+## Chapter 10.7 Overloading the Increment and Decrement Operators
+
+The increment and decrement operators present their own challenges, as each has two variants: the prefix and the postfix. This challenge is resolved with distinct signatures to differentiate the two.
+
+The solution is not elegant, but it works. It uses dummy values.
+
+Lets show how each of these are prototyped:
+
+**Prefix Increment as Member Function**
+`++p1` would be:
+```cpp
+...
+// in Person class
+    Person& operator++();
+...
+```
+
+**Prefix Increment as Non-Member Function**
+`++p1` would be:
+```cpp
+Person& operator++(Person&);
+```
+
+**Postfix Increment as Member Function**
+`p1++` would be:
+```cpp
+...
+//in Person class
+    Person operator++(int);
+...
+```
+
+**Postfix Increment as Non-Member Function**
+`p1` would be:
+```cpp
+Person operator++(Person&, int);
+```
+
+The int will be automatically provided a zero during operation calling, and the differentiation will be made.
+
+Note that the prefix increment operator returns a reference, while the postfix operator returns the value. The postfix will typically return a temporary object containing the original value of the object before incrementing. These object are treated as rvalues, and cannot be used on the left side of an assignment. Meanwhile, the prefix returns the actual incremented object, and is treated as an lvalue in a continuing expression.
+
+The text offers a performance tip of giving prefix operators precedence, as we get values instead of creating whole new objects.
